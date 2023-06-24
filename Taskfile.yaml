@@ -1,0 +1,44 @@
+---
+# https://taskfile.dev
+version: '3'
+
+tasks:
+  init:
+    desc: Install some important commands and tools
+    cmds:
+      - npm install
+      - go install github.com/a-h/templ/cmd/templ@latest
+      - go install github.com/vektra/mockery/v2@latest
+      - go mod tidy
+  assets:
+    desc: Build the assets
+    cmds:
+      - tailwindcss -i ./internal/assets/tailwind.css -o ./internal/assets/dist/styles.css
+  wasm:
+    desc: Build the WASM client
+    cmds:
+      - GOOS=js GOARCH=wasm go build -ldflags="-s -w" -o ./internal/assets/dist/client.wasm ./cmd/client
+  tiny-wasm:
+    desc: Build the WASM client with Tinygo
+    cmds:
+      - tinygo build -no-debug -o internal/assets/dist/client.wasm -target wasm ./cmd/client
+  generate:
+    desc: Generate stuff and things
+    cmds:
+      - go generate ./...
+  build:
+    desc: Build the application
+    deps:
+      - assets
+      - generate
+      - wasm
+    cmds:
+      - go build -ldflags="-s -w" -o ./bin/server ./cmd/server
+  run:
+    desc: Run the application
+    cmds:
+      - go run ./cmd/server/...
+  test:
+    desc: Run the tests
+    cmds:
+      - go test ./...

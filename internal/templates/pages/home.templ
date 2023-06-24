@@ -1,0 +1,15 @@
+package pages
+
+import (
+	"github.com/stackus/todos-htmx-wasm/internal/domain"
+	"github.com/stackus/todos-htmx-wasm/internal/templates/partials"
+	"github.com/stackus/todos-htmx-wasm/internal/templates/shared"
+)
+
+templ HomePage(todos []*domain.Todo) {
+	@shared.Page("Home") {
+		@partials.Search("")
+		@partials.RenderTodos(todos)
+		@partials.AddTodoForm()
+	}
+}
